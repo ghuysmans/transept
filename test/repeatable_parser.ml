@@ -28,6 +28,18 @@ let should_parse_nothing () =
     "should_parse_nothing" expected computed
 ;;
 
+let should_parse_nothing_before_atom () =
+  let expected = (None, true)
+  and computed =
+    Response.fold
+      Parser.(parse (opt (in_range 'a' 'z') <& atom '.') (build "."))
+      (fun (_, a, b) -> (a, b))
+      (fun (_, b) -> (Some '?', b))
+  in
+  Alcotest.(check (pair (option char) bool))
+    "should_parse_nothing_before_atom" expected computed
+;;
+
 let should_parse_nothing_with_repeatable () =
   let expected = (Some [], false)
   and computed =
@@ -82,6 +94,8 @@ let test_cases =
     [
       test_case "Should parse a char" `Quick should_parse_a_char
     ; test_case "Should parse nothing" `Quick should_parse_nothing
+    ; test_case "Should parse nothing before atom" `Quick
+        should_parse_nothing_before_atom
     ; test_case "Should parse nothing with repeatable" `Quick
         should_parse_nothing_with_repeatable
     ; test_case "Should parse no char with repeatable" `Quick
